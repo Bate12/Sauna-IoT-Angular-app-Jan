@@ -55,11 +55,11 @@
         </div>
         
         <ion-item lines="none" color="transparent">
-          <ion-range min="20" max="65" step="1" pin="true" 
+          <ion-range min="0" max="65" step="1" pin="true" 
                      [(ngModel)]="tempValue" 
                      (ionChange)="saveState()">
-            <ion-label slot="start">20</ion-label>
-            <ion-label slot="end">65</ion-label>
+            <ion-label slot="start" class="ion-margin-start">0   | |</ion-label>
+            <ion-label slot="end" class="ion-margin-end">| |   65</ion-label>
           </ion-range>
         </ion-item>
       </div>

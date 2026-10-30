@@ -29,7 +29,7 @@ export class HomePage implements OnInit {
   // State variables with default values
   powerState: string = 'off';
   tempUnit: string = 'c';
-  tempValue: number = 40;
+  tempValue: number = 60;
 
   constructor() {
     // Nyní se ikony správně načtou bez chyb

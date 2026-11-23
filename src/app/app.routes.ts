@@ -16,6 +16,10 @@ export const routes: Routes = [
           import('./historie/historie.page').then((m) => m.HistoriePage),
       },
       {
+        path: 'info',
+        loadComponent: () => import('./info/info.page').then((m) => m.InfoPage),
+      },
+      {
         path: '',
         redirectTo: 'controls',
         pathMatch: 'full',

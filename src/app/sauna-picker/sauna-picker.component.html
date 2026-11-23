@@ -1,0 +1,122 @@
+<!-- Header: název vybrané sauny, tapnutím se otevře výběr -->
+<button
+  type="button"
+  class="sauna-trigger"
+  aria-haspopup="dialog"
+  [attr.aria-label]="'Selected sauna: ' + (saunaService.selected()?.name ?? '') + '. Change sauna'"
+  (click)="openSheet()"
+>
+  <span class="sauna-trigger__name">{{ saunaService.selected()?.name ?? 'Loading…' }}</span>
+  <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+</button>
+
+<!-- Bottom sheet se seznamem saun -->
+<ion-modal
+  [isOpen]="isSheetOpen()"
+  [initialBreakpoint]="0.5"
+  [breakpoints]="[0, 0.5, 0.9]"
+  (didDismiss)="isSheetOpen.set(false)"
+>
+  <ng-template>
+    <ion-content>
+      <ion-list lines="full">
+        <ion-list-header>
+          <ion-label>Select sauna</ion-label>
+        </ion-list-header>
+
+        @for (sauna of saunaService.saunas(); track sauna.id) {
+          <ion-item>
+            <button
+              type="button"
+              class="sauna-option"
+              [attr.aria-current]="sauna.id === saunaService.selectedId() ? 'true' : null"
+              (click)="choose(sauna.id)"
+            >
+              <ion-icon
+                name="checkmark"
+                color="primary"
+                aria-hidden="true"
+                [class.is-hidden]="sauna.id !== saunaService.selectedId()"
+              ></ion-icon>
+              <span class="sauna-option__name">{{ sauna.name }}</span>
+            </button>
+            <ion-button
+              slot="end"
+              fill="clear"
+              [attr.aria-label]="'Edit ' + sauna.name"
+              (click)="openEdit(sauna)"
+            >
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+
+        <ion-item button detail="false" lines="none" (click)="openAdd()">
+          <ion-icon slot="start" name="add" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label color="primary">Add sauna</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Formulář: přidání / úprava sauny -->
+<ion-modal [isOpen]="isFormOpen()" (didDismiss)="closeForm()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeForm()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>{{ editing() ? 'Edit sauna' : 'New sauna' }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="save()">
+        <ion-list lines="full">
+          <ion-item>
+            <ion-input
+              label="Sauna name"
+              labelPlacement="stacked"
+              placeholder="e.g. Mountain cabin"
+              name="name"
+              [(ngModel)]="name"
+              [maxlength]="40"
+              [errorText]="isDuplicate ? 'A sauna with this name already exists' : ''"
+              [class.ion-invalid]="isDuplicate"
+              [class.ion-touched]="isDuplicate"
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+
+        @if (formError()) {
+          <ion-text color="danger">
+            <p>{{ formError() }}</p>
+          </ion-text>
+        }
+
+        <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="!canSave">
+          {{ saving() ? 'Saving…' : editing() ? 'Save' : 'Create' }}
+        </ion-button>
+
+        @if (editing()) {
+          <ion-button
+            expand="block"
+            fill="outline"
+            color="danger"
+            class="ion-margin-top"
+            [disabled]="!saunaService.canDelete() || saving()"
+            (click)="confirmDelete()"
+          >
+            <ion-icon slot="start" name="trash-outline"></ion-icon>
+            Delete sauna
+          </ion-button>
+          @if (!saunaService.canDelete()) {
+            <ion-note class="delete-hint">At least one sauna must exist.</ion-note>
+          }
+        }
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

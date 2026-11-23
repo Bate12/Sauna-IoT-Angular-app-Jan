@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { TestComponentaComponent } from '../test-componenta/test-componenta.component';
+import { SaunaPickerComponent } from '../sauna-picker/sauna-picker.component';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAlert, IonButton,
   IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle,
@@ -16,11 +17,11 @@ import { logoGithub, timeOutline, thermometerOutline, flashOutline } from 'ionic
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   imports: [
-    FormsModule, 
+    FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonAlert, IonButton,
     IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle,
     IonIcon, IonSegment, IonSegmentButton, IonItem, IonLabel, IonSelect,
-    IonSelectOption, IonRange, IonList, TestComponentaComponent
+    IonSelectOption, IonRange, IonList, TestComponentaComponent, SaunaPickerComponent
   ],
 })
 export class HomePage implements OnInit {
@@ -52,7 +53,7 @@ export class HomePage implements OnInit {
     localStorage.setItem('sauna_power', this.powerState);
     localStorage.setItem('sauna_unit', this.tempUnit);
     localStorage.setItem('sauna_temp', this.tempValue.toString());
-    
+
     // In the future, this is where you will send the WebSocket message:
     // this.websocketService.sendMessage({ power: this.powerState, temp: this.tempValue });
   }

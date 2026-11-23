@@ -1,6 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Ovládání</ion-title>
+    <app-sauna-picker slot="end"></app-sauna-picker>
   </ion-toolbar>
 </ion-header>
 
@@ -31,8 +32,8 @@
     <!-- Sauna Controls -->
     <div class="sauna-controls">
       <!-- Interconnected On/Off Buttons -->
-      <ion-segment mode="ios" class="power-segment" 
-                   [(ngModel)]="powerState" 
+      <ion-segment mode="ios" class="power-segment"
+                   [(ngModel)]="powerState"
                    (ionChange)="saveState()">
         <ion-segment-button value="on" class="btn-on">
           <ion-label>On</ion-label>
@@ -46,17 +47,17 @@
       <div class="temperature-control">
         <div class="temp-header">
           <ion-label>Teplota</ion-label>
-          <ion-select interface="popover" 
-                      [(ngModel)]="tempUnit" 
+          <ion-select interface="popover"
+                      [(ngModel)]="tempUnit"
                       (ionChange)="saveState()">
             <ion-select-option value="c">°C</ion-select-option>
             <ion-select-option value="f">°F</ion-select-option>
           </ion-select>
         </div>
-        
+
         <ion-item lines="none" color="transparent">
-          <ion-range min="0" max="65" step="1" pin="true" 
-                     [(ngModel)]="tempValue" 
+          <ion-range min="0" max="65" step="1" pin="true"
+                     [(ngModel)]="tempValue"
                      (ionChange)="saveState()">
             <ion-label slot="start" class="ion-margin-start">0   | |</ion-label>
             <ion-label slot="end" class="ion-margin-end">| |   65</ion-label>

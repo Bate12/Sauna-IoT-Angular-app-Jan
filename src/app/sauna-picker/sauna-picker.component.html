@@ -1,0 +1,60 @@
+<div class="sauna-picker">
+  <ion-select
+    aria-label="Vybraná sauna"
+    interface="popover"
+    placeholder="Načítám…"
+    [value]="saunaService.selectedId()"
+    (ionChange)="onSelect($event.detail.value)"
+  >
+    @for (sauna of saunaService.saunas(); track sauna.id) {
+      <ion-select-option [value]="sauna.id">{{ sauna.name }}</ion-select-option>
+    }
+  </ion-select>
+
+  <ion-button fill="clear" size="small" aria-label="Přidat saunu" (click)="openModal()">
+    <ion-icon slot="icon-only" name="add"></ion-icon>
+  </ion-button>
+</div>
+
+<ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeModal()">Zrušit</ion-button>
+        </ion-buttons>
+        <ion-title>Nová sauna</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="create()">
+        <ion-list lines="full">
+          <ion-item>
+            <ion-input
+              label="Název sauny"
+              labelPlacement="stacked"
+              placeholder="např. Chata Beskydy"
+              name="name"
+              [(ngModel)]="newName"
+              [maxlength]="40"
+              [errorText]="isDuplicate ? 'Sauna s tímto názvem už existuje' : ''"
+              [class.ion-invalid]="isDuplicate"
+              [class.ion-touched]="isDuplicate"
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+
+        @if (createError()) {
+          <ion-text color="danger">
+            <p>{{ createError() }}</p>
+          </ion-text>
+        }
+
+        <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="!canCreate">
+          {{ saving() ? 'Ukládám…' : 'Create' }}
+        </ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -7,6 +7,11 @@ export interface Sauna {
   id: string;
   name: string;
   createdAt: string;
+  /** Je sauna zapnutá? */
+  isOn: boolean;
+  /** Kdy byla sauna zapnuta (ISO string); null, když je vypnutá. Z toho se počítá timer. */
+  turnedOnAt: string | null;
 }
 
-export type NewSauna = Omit<Sauna, 'id' | 'createdAt'>;
+/** Data pro vytvoření sauny – zbytek (id, datum, stav) doplní repository. */
+export type NewSauna = Pick<Sauna, 'name'>;

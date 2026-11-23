@@ -68,6 +68,13 @@ export class SaunaService {
     if (this.selectedId() === id) await this.select(rest[0].id);
   }
 
+  /** Zapne / vypne saunu přes repository a aktualizuje její stav v UI. */
+  async setPower(id: string, on: boolean): Promise<Sauna> {
+    const updated = on ? await this.repo.turnOn(id) : await this.repo.turnOff(id);
+    this.saunas.update((list) => list.map((s) => (s.id === id ? updated : s)));
+    return updated;
+  }
+
   /** Je název už použitý? `exceptId` = sauna, kterou právě přejmenováváme. */
   exists(name: string, exceptId?: string): boolean {
     const n = name.trim().toLowerCase();

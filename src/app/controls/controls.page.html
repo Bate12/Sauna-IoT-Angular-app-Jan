@@ -6,4 +6,34 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"></ion-content>
+<ion-content [fullscreen]="true">
+  @if (sauna(); as sauna) {
+    <div class="power-wrap">
+      <button
+        type="button"
+        class="power-button"
+        [class.is-on]="sauna.isOn"
+        [attr.aria-pressed]="sauna.isOn"
+        [attr.aria-label]="sauna.isOn ? 'Turn ' + sauna.name + ' off' : 'Turn ' + sauna.name + ' on'"
+        [disabled]="busy()"
+        (click)="toggle()"
+      >
+        <ion-icon name="power" aria-hidden="true"></ion-icon>
+        <span class="power-button__state">{{ sauna.isOn ? 'ON' : 'OFF' }}</span>
+        @if (sauna.isOn) {
+          <span class="power-button__timer" role="timer" aria-label="Time on">{{ elapsed() }}</span>
+        }
+      </button>
+
+      <p class="power-hint">
+        {{ sauna.isOn ? 'Tap to turn the sauna off' : 'Tap to turn the sauna on' }}
+      </p>
+
+      @if (error()) {
+        <ion-text color="danger">
+          <p>{{ error() }}</p>
+        </ion-text>
+      }
+    </div>
+  }
+</ion-content>

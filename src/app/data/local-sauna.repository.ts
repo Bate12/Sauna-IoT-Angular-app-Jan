@@ -11,11 +11,19 @@ export class LocalSaunaRepository extends SaunaRepository {
   private readonly storage = inject(DataStorage);
 
   async getAll(): Promise<Sauna[]> {
-    return (await this.storage.get<Sauna[]>(SAUNAS_KEY)) ?? [];
+    const saunas = (await this.storage.get<Sauna[]>(SAUNAS_KEY)) ?? [];
+    // Sauny uložené před přidáním zapínání nemají stav → doplníme výchozí (vypnuto).
+    return saunas.map((s) => ({ ...s, isOn: s.isOn ?? false, turnedOnAt: s.turnedOnAt ?? null }));
   }
 
   async create(data: NewSauna): Promise<Sauna> {
-    const sauna: Sauna = { id: crypto.randomUUID(), createdAt: new Date().toISOString(), ...data };
+    const sauna: Sauna = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      isOn: false,
+      turnedOnAt: null,
+      ...data,
+    };
     await this.saveAll([...(await this.getAll()), sauna]);
     return sauna;
   }
@@ -27,6 +35,22 @@ export class LocalSaunaRepository extends SaunaRepository {
 
   async delete(id: string): Promise<void> {
     await this.saveAll((await this.getAll()).filter((s) => s.id !== id));
+  }
+
+  turnOn(id: string): Promise<Sauna> {
+    return this.setPower(id, true);
+  }
+
+  turnOff(id: string): Promise<Sauna> {
+    return this.setPower(id, false);
+  }
+
+  private async setPower(id: string, isOn: boolean): Promise<Sauna> {
+    const sauna = (await this.getAll()).find((s) => s.id === id);
+    if (!sauna) throw new Error('Sauna not found.');
+    if (sauna.isOn === isOn) return sauna; // už je v požadovaném stavu, čas zapnutí nepřepisujeme
+
+    return this.update({ ...sauna, isOn, turnedOnAt: isOn ? new Date().toISOString() : null });
   }
 
   private saveAll(saunas: Sauna[]): Promise<void> {

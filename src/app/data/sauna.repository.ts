@@ -10,4 +10,9 @@ export abstract class SaunaRepository {
   abstract create(data: NewSauna): Promise<Sauna>;
   abstract update(sauna: Sauna): Promise<Sauna>;
   abstract delete(id: string): Promise<void>;
+
+  /** Zapne saunu a vrátí její nový stav. */
+  abstract turnOn(id: string): Promise<Sauna>;
+  /** Vypne saunu a vrátí její nový stav. */
+  abstract turnOff(id: string): Promise<Sauna>;
 }

@@ -8,4 +8,6 @@ import { NewSauna, Sauna } from './sauna.model';
 export abstract class SaunaRepository {
   abstract getAll(): Promise<Sauna[]>;
   abstract create(data: NewSauna): Promise<Sauna>;
+  abstract update(sauna: Sauna): Promise<Sauna>;
+  abstract delete(id: string): Promise<void>;
 }

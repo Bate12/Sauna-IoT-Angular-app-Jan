@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
+  AlertController,
   IonButton,
   IonButtons,
   IonContent,
@@ -8,18 +9,21 @@ import {
   IonIcon,
   IonInput,
   IonItem,
+  IonLabel,
   IonList,
+  IonListHeader,
   IonModal,
-  IonSelect,
-  IonSelectOption,
+  IonNote,
   IonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { add, checkmark, chevronDown, createOutline, trashOutline } from 'ionicons/icons';
+import { Sauna } from '../data/sauna.model';
 import { SaunaService } from '../services/sauna.service';
 
+/** Výběr sauny v headeru: název sauny → bottom sheet se seznamem, přidáním a úpravou. */
 @Component({
   selector: 'app-sauna-picker',
   templateUrl: 'sauna-picker.component.html',
@@ -33,10 +37,11 @@ import { SaunaService } from '../services/sauna.service';
     IonIcon,
     IonInput,
     IonItem,
+    IonLabel,
     IonList,
+    IonListHeader,
     IonModal,
-    IonSelect,
-    IonSelectOption,
+    IonNote,
     IonText,
     IonTitle,
     IonToolbar,
@@ -44,47 +49,100 @@ import { SaunaService } from '../services/sauna.service';
 })
 export class SaunaPickerComponent {
   readonly saunaService = inject(SaunaService);
+  private readonly alertCtrl = inject(AlertController);
 
-  readonly isModalOpen = signal(false);
+  /** Bottom sheet se seznamem saun. */
+  readonly isSheetOpen = signal(false);
+
+  /** Formulář: editing = null → přidání nové sauny, jinak úprava této sauny. */
+  readonly isFormOpen = signal(false);
+  readonly editing = signal<Sauna | null>(null);
   readonly saving = signal(false);
-  readonly createError = signal<string | null>(null);
-  newName = '';
+  readonly formError = signal<string | null>(null);
+  name = '';
 
   constructor() {
-    addIcons({ add });
+    addIcons({ add, checkmark, chevronDown, createOutline, trashOutline });
   }
 
   get isDuplicate(): boolean {
-    return !!this.newName.trim() && this.saunaService.exists(this.newName);
+    return !!this.name.trim() && this.saunaService.exists(this.name, this.editing()?.id);
   }
 
-  get canCreate(): boolean {
-    return !!this.newName.trim() && !this.isDuplicate && !this.saving();
+  get canSave(): boolean {
+    const trimmed = this.name.trim();
+    const unchanged = trimmed === this.editing()?.name;
+    return !!trimmed && !unchanged && !this.isDuplicate && !this.saving();
   }
 
-  onSelect(id: string): void {
-    this.saunaService.select(id);
+  openSheet(): void {
+    this.isSheetOpen.set(true);
   }
 
-  openModal(): void {
-    this.newName = '';
-    this.createError.set(null);
-    this.isModalOpen.set(true);
+  async choose(id: string): Promise<void> {
+    this.isSheetOpen.set(false);
+    await this.saunaService.select(id);
   }
 
-  closeModal(): void {
-    this.isModalOpen.set(false);
+  openAdd(): void {
+    this.openForm(null);
   }
 
-  async create(): Promise<void> {
-    if (!this.canCreate) return;
+  openEdit(sauna: Sauna): void {
+    this.openForm(sauna);
+  }
+
+  closeForm(): void {
+    this.isFormOpen.set(false);
+  }
+
+  async save(): Promise<void> {
+    if (!this.canSave) return;
+    const editing = this.editing();
+    await this.run(() =>
+      editing ? this.saunaService.rename(editing.id, this.name) : this.saunaService.add(this.name),
+    );
+  }
+
+  async confirmDelete(): Promise<void> {
+    const sauna = this.editing();
+    if (!sauna || !this.saunaService.canDelete()) return;
+
+    const alert = await this.alertCtrl.create({
+      header: 'Delete sauna?',
+      message: `"${sauna.name}" will be permanently deleted.`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.run(() => this.saunaService.remove(sauna.id));
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  private openForm(sauna: Sauna | null): void {
+    this.editing.set(sauna);
+    this.name = sauna?.name ?? '';
+    this.formError.set(null);
+    // Sheet zavřeme, aby se nepřekrývaly dva modaly.
+    this.isSheetOpen.set(false);
+    this.isFormOpen.set(true);
+  }
+
+  /** Spustí akci formuláře; při úspěchu formulář zavře, při chybě zobrazí hlášku. */
+  private async run(action: () => Promise<unknown>): Promise<void> {
     this.saving.set(true);
-    this.createError.set(null);
+    this.formError.set(null);
     try {
-      await this.saunaService.add(this.newName);
-      this.closeModal();
+      await action();
+      this.closeForm();
     } catch (e) {
-      this.createError.set(e instanceof Error ? e.message : 'Saunu se nepodařilo vytvořit.');
+      this.formError.set(e instanceof Error ? e.message : 'Something went wrong.');
     } finally {
       this.saving.set(false);
     }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TestComponentaComponent } from '../test-componenta/test-componenta.component';
 import { SaunaPickerComponent } from '../sauna-picker/sauna-picker.component';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAlert, IonButton,
@@ -13,18 +12,18 @@ import { addIcons } from 'ionicons';
 import { logoGithub, timeOutline, thermometerOutline, flashOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-controls',
+  templateUrl: 'controls.page.html',
+  styleUrls: ['controls.page.scss'],
   imports: [
     FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonAlert, IonButton,
     IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle,
     IonIcon, IonSegment, IonSegmentButton, IonItem, IonLabel, IonSelect,
-    IonSelectOption, IonRange, IonList, TestComponentaComponent, SaunaPickerComponent
+    IonSelectOption, IonRange, IonList, SaunaPickerComponent
   ],
 })
-export class HomePage implements OnInit {
+export class ControlsPage implements OnInit {
   alertButtons = ['Action'];
 
   // State variables with default values

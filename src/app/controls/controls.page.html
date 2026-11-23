@@ -1,21 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Ovládání</ion-title>
-    <app-sauna-picker slot="end"></app-sauna-picker>
+    <ion-title>
+      <app-sauna-picker></app-sauna-picker>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Sauna App</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <div id="container" class="ion-padding-top">
     <br/>
-    <strong>IoT Aplikace</strong> <br/>
-    Integruje ovládání sauny z pohodlí Vašeho telefonu. 
+    <strong>IoT App</strong> <br/>
+    Control your sauna from the comfort of your phone. 
     <p>
       <a
         target="_blank"
@@ -46,7 +41,7 @@
       <!-- Temperature Slider & Dropdown -->
       <div class="temperature-control">
         <div class="temp-header">
-          <ion-label>Teplota</ion-label>
+          <ion-label>Temperature</ion-label>
           <ion-select interface="popover"
                       [(ngModel)]="tempUnit"
                       (ionChange)="saveState()">
@@ -66,71 +61,69 @@
       </div>
     </div>
 
-    <app-test-componenta></app-test-componenta>
-
     <!-- WRAP CARDS IN A GRID CONTAINER -->
     <div class="card-grid">
-      <!-- Karta 1: Jak to funguje (Původní) -->
+      <!-- Card 1: How it works -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Jak to funguje</ion-card-title>
-          <ion-card-subtitle>O aplikaci</ion-card-subtitle>
+          <ion-card-title>How it works</ion-card-title>
+          <ion-card-subtitle>About the app</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          Někteří lidé s domácí saunou jásají. Je to skvělé, 
-          ale má to háček. Chcete si nahřát saunu, jenže nejste doma. Co budu dělat?
+          Having a sauna at home is great, but there is a catch.
+          You want to heat up your sauna, but you are not at home. What now?
           <br/><br/>
-          Naštěstí máte Sauna App, která propojuje Vaši saunu s Internetem. 
-          Je to skvělý nástroj pro ovládání sauny, statistiky a mnohem víc. 
+          Luckily, you have Sauna App, which connects your sauna to the Internet.
+          It is a great tool for controlling your sauna, statistics and much more.
         </ion-card-content>
       </ion-card>
 
-      <!-- Karta 2: Statistiky -->
+      <!-- Card 2: Statistics -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Statistiky</ion-card-title>
-          <ion-card-subtitle>Tento měsíc</ion-card-subtitle>
+          <ion-card-title>Statistics</ion-card-title>
+          <ion-card-subtitle>This month</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
           <ion-list lines="none" class="stats-list">
             <ion-item>
               <ion-icon name="time-outline" slot="start"></ion-icon>
-              <ion-label>Čas v sauně: <strong>12 h 30 min</strong></ion-label>
+              <ion-label>Time in sauna: <strong>12 h 30 min</strong></ion-label>
             </ion-item>
             <ion-item>
               <ion-icon name="thermometer-outline" slot="start"></ion-icon>
-              <ion-label>Prům. teplota: <strong>55 °C</strong></ion-label>
+              <ion-label>Avg. temperature: <strong>55 °C</strong></ion-label>
             </ion-item>
             <ion-item>
               <ion-icon name="flash-outline" slot="start"></ion-icon>
-              <ion-label>Spotřeba: <strong>18 kWh</strong></ion-label>
+              <ion-label>Consumption: <strong>18 kWh</strong></ion-label>
             </ion-item>
           </ion-list>
         </ion-card-content>
       </ion-card>
 
-      <!-- Karta 3: Graf -->
+      <!-- Card 3: Chart -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Vývoj teploty</ion-card-title>
-          <ion-card-subtitle>Posledních 7 dní</ion-card-subtitle>
+          <ion-card-title>Temperature trend</ion-card-title>
+          <ion-card-subtitle>Last 7 days</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          <!-- Placeholder pro budoucí integraci např. Chart.js -->
+          <!-- Placeholder for a future chart, e.g. Chart.js -->
           <div class="chart-placeholder">
-            <span>[ Zde bude interaktivní graf ]</span>
+            <span>[ Interactive chart coming soon ]</span>
           </div>
         </ion-card-content>
       </ion-card>
 
-      <!-- Karta 4: Kontakt -->
+      <!-- Card 4: Contact -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Kontaktujte mě</ion-card-title>
-          <ion-card-subtitle>Podpora a dotazy</ion-card-subtitle>
+          <ion-card-title>Contact me</ion-card-title>
+          <ion-card-subtitle>Support and questions</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          Máte problém se saunou nebo aplikací? Neváhejte se ozvat, rád vám pomohu.
+          Having trouble with your sauna or the app? Feel free to get in touch, I am happy to help.
           <br><br>
           <strong>Email:</strong> podpora@sauna-app.cz<br>
           <strong>Web:</strong> www.sauna-app.cz

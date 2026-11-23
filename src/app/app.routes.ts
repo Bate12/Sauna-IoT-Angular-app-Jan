@@ -6,25 +6,25 @@ export const routes: Routes = [
     loadComponent: () => import('./tabs/tabs.page').then((m) => m.TabsPage),
     children: [
       {
-        path: 'ovladani',
+        path: 'controls',
         loadComponent: () =>
-          import('./home/home.page').then((m) => m.HomePage),
+          import('./controls/controls.page').then((m) => m.ControlsPage),
       },
       {
-        path: 'historie',
+        path: 'history',
         loadComponent: () =>
           import('./historie/historie.page').then((m) => m.HistoriePage),
       },
       {
         path: '',
-        redirectTo: 'ovladani',
+        redirectTo: 'controls',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: 'tabs/ovladani',
+    redirectTo: 'tabs/controls',
     pathMatch: 'full',
   },
 ];

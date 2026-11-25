@@ -1,0 +1,42 @@
+.sauna-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.power-segment {
+  .btn-on.segment-button-checked {
+    --color-checked: var(--ion-color-success-contrast);
+    --indicator-color: var(--ion-color-success);
+  }
+
+  .btn-off.segment-button-checked {
+    --color-checked: var(--ion-color-danger-contrast);
+    --indicator-color: var(--ion-color-danger);
+  }
+}
+
+.temperature-control {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--ion-card-background, var(--ion-color-light));
+
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+}
+
+.temp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  ion-select {
+    width: auto;
+    min-width: 68px;
+  }
+}

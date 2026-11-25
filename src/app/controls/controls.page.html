@@ -1,10 +1,60 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Hello World ig? test test test test test test test test test test test test 
       <app-sauna-picker></app-sauna-picker>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"></ion-content>
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (saunaService.selected(); as sauna) {
+    <div class="sauna-controls">
+      <!-- Interconnected On/Off Buttons -->
+      <ion-segment
+        mode="ios"
+        class="power-segment"
+        [value]="powerState()"
+        (ionChange)="onPowerChange($event)"
+      >
+        <ion-segment-button value="on" class="btn-on">
+          <ion-label>On</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="off" class="btn-off">
+          <ion-label>Off</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Temperature Slider & Dropdown -->
+      <div class="temperature-control">
+        <div class="temp-header">
+          <ion-label>
+            Temperature: <strong>{{ tempValue() }} {{ tempUnit() === 'c' ? '°C' : '°F' }}</strong>
+          </ion-label>
+          <ion-select
+            interface="popover"
+            aria-label="Temperature unit"
+            [value]="tempUnit()"
+            (ionChange)="onUnitChange($event)"
+          >
+            <ion-select-option value="c">°C</ion-select-option>
+            <ion-select-option value="f">°F</ion-select-option>
+          </ion-select>
+        </div>
+
+        <ion-item lines="none" color="transparent">
+          <ion-range
+            [min]="minTemp()"
+            [max]="maxTemp()"
+            [step]="1"
+            [pin]="true"
+            [value]="tempValue()"
+            (ionChange)="onTempChange($event)"
+          >
+            <ion-label slot="start">{{ minTemp() }}</ion-label>
+            <ion-label slot="end">{{ maxTemp() }}</ion-label>
+          </ion-range>
+        </ion-item>
+      </div>
+    </div>
+  }
+</ion-content>

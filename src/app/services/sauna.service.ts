@@ -48,6 +48,19 @@ export class SaunaService {
     return sauna;
   }
 
+  /** Aktualizuje změny sauny, přidá je do SaunaRepository a aktualizuje signál 'saunas' */
+  async updateControls(
+    id: string,
+    changes: Partial<Pick<Sauna, 'power' | 'tempUnit' | 'targetTemp'>>,
+  ): Promise<Sauna> {
+    const sauna = this.saunas().find((s) => s.id === id);
+    if (!sauna) throw new Error('Sauna not found.');
+
+    const updated = await this.repo.update({ ...sauna, ...changes });
+    this.saunas.update((list) => list.map((s) => (s.id === id ? updated : s)));
+    return updated;
+  }
+
   /** Přejmenuje saunu. */
   async rename(id: string, name: string): Promise<Sauna> {
     const sauna = this.saunas().find((s) => s.id === id);

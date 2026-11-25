@@ -3,9 +3,76 @@
     <ion-title>
       <app-sauna-picker></app-sauna-picker>
     </ion-title>
+
+    @if (allRecords().length > 0) {
+      <ion-buttons slot="end">
+        <ion-button
+          color="danger"
+          aria-label="Clear sauna history"
+          (click)="confirmClear()"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <p>No records yet.</p>
+  @if (allRecords().length > 0) {
+    <ion-segment
+      mode="ios"
+      class="history-filter"
+      [value]="filter()"
+      (ionChange)="onFilterChange($event)"
+    >
+      <ion-segment-button value="all">
+        <ion-label>All ({{ allRecords().length }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="power">
+        <ion-label>Power</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="temperature">
+        <ion-label>Temp</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (filteredRecords().length > 0) {
+      <ion-list inset="true" class="history-list">
+        @for (record of filteredRecords(); track record.id) {
+          <ion-item>
+            <ion-icon
+              slot="start"
+              [name]="iconFor(record.type)"
+              [color]="record.type === 'power' ? (record.power === 'on' ? 'success' : 'danger') : 'primary'"
+              aria-hidden="true"
+            ></ion-icon>
+
+            <ion-label>
+              <h3>{{ record.message }}</h3>
+              <p class="record-time">
+                <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                <span>{{ record.timestamp | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+              </p>
+            </ion-label>
+
+            <ion-note slot="end" class="record-snapshot">
+              <ion-badge [color]="record.power === 'on' ? 'success' : 'medium'">
+                {{ record.power.toUpperCase() }}
+              </ion-badge>
+              <span>{{ record.targetTemp }} {{ record.tempUnit === 'c' ? '°C' : '°F' }}</span>
+            </ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    } @else {
+      <div class="empty-state">
+        <p>No records in this category.</p>
+      </div>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>No records yet.</p>
+    </div>
+  }
 </ion-content>

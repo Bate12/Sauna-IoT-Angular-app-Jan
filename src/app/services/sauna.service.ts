@@ -1,7 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { DataStorage } from '../data/data-storage';
-import { Sauna } from '../data/sauna.model';
+import { Sauna, SaunaHistoryRecord } from '../data/sauna.model';
 import { SaunaRepository } from '../data/sauna.repository';
+
 
 /** Vybraná sauna je nastavení zařízení – zůstává lokální i ve verzi s backendem. */
 const SELECTED_KEY = 'selected_sauna_id';
@@ -48,7 +49,7 @@ export class SaunaService {
     return sauna;
   }
 
-  /** Aktualizuje změny sauny, přidá je do SaunaRepository a aktualizuje signál 'saunas' */
+/** Aktualizuje stav ovládání sauny a zapíše změnu do její historie přes SaunaRepository. */
   async updateControls(
     id: string,
     changes: Partial<Pick<Sauna, 'power' | 'tempUnit' | 'targetTemp'>>,
@@ -56,9 +57,73 @@ export class SaunaService {
     const sauna = this.saunas().find((s) => s.id === id);
     if (!sauna) throw new Error('Sauna not found.');
 
-    const updated = await this.repo.update({ ...sauna, ...changes });
+    const nextPower = changes.power ?? sauna.power ?? 'off';
+    const nextUnit = changes.tempUnit ?? sauna.tempUnit ?? 'c';
+    const nextTemp = changes.targetTemp ?? sauna.targetTemp ?? (nextUnit === 'c' ? 40 : 104);
+
+    const record = this.createHistoryRecord(sauna, {
+      power: nextPower,
+      tempUnit: nextUnit,
+      targetTemp: nextTemp,
+    });
+
+    const history = record
+      ? [record, ...(sauna.history ?? [])].slice(0, 100)
+      : (sauna.history ?? []);
+
+    const updated = await this.repo.update({
+      ...sauna,
+      ...changes,
+      history,
+    });
+
     this.saunas.update((list) => list.map((s) => (s.id === id ? updated : s)));
     return updated;
+  }
+
+  /** Vymaže historii vybrané sauny přes SaunaRepository. */
+  async clearHistory(id: string): Promise<void> {
+    const sauna = this.saunas().find((s) => s.id === id);
+    if (!sauna) throw new Error('Sauna not found.');
+
+    const updated = await this.repo.update({ ...sauna, history: [] });
+    this.saunas.update((list) => list.map((s) => (s.id === id ? updated : s)));
+  }
+
+  private createHistoryRecord(
+    previous: Sauna,
+    current: { power: 'on' | 'off'; tempUnit: 'c' | 'f'; targetTemp: number },
+  ): SaunaHistoryRecord | null {
+    const prevPower = previous.power ?? 'off';
+    const prevUnit = previous.tempUnit ?? 'c';
+    const prevTemp = previous.targetTemp ?? (prevUnit === 'c' ? 40 : 104);
+    const unitLabel = current.tempUnit === 'c' ? '°C' : '°F';
+
+    let type: SaunaHistoryRecord['type'] | null = null;
+    let message = '';
+
+    if (current.power !== prevPower) {
+      type = 'power';
+      message = current.power === 'on' ? 'Sauna turned ON' : 'Sauna turned OFF';
+    } else if (current.tempUnit !== prevUnit) {
+      type = 'unit';
+      message = `Unit switched to ${unitLabel} (${current.targetTemp} ${unitLabel})`;
+    } else if (current.targetTemp !== prevTemp) {
+      type = 'temperature';
+      message = `Target temperature set to ${current.targetTemp} ${unitLabel}`;
+    }
+
+    if (!type) return null;
+
+    return {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      timestamp: new Date().toISOString(),
+      type,
+      message,
+      power: current.power,
+      targetTemp: current.targetTemp,
+      tempUnit: current.tempUnit,
+    };
   }
 
   /** Přejmenuje saunu. */
